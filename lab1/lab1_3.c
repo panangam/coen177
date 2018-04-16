@@ -1,11 +1,14 @@
 // create 12 children by creating a symmetric processes tree
-// (2 depths; each node has 3 children)
+// (3 levels; each node has 3 children)
 
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>
 
+// Recursive function used to generate a symmetric process tree efficiently
+// This procedure can create any tree with a specified depth and with all
+// nodes having the same number of children
 void recurse(int level, int child)
 {
 	int status;	// status from waitpid
