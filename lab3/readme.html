@@ -1,0 +1,41 @@
+<h1>COEN 177 Lab 2</h1>
+<p><em>Oras Phongpanangam</em></p>
+<p>Compare performance of disk reading between reading sequentially and jumping all over the file.</p>
+<h2>Files</h2>
+<ul>
+<li><code>seqread.c</code>: Program for reading sequentially.</li>
+<li><code>randread.c</code>: Program for reading randomly (jumping all over the file). Also check for the file size and read roughly the same amount of data as <code>seqread</code>.</li>
+<li><code>makefile</code>: For compiling.</li>
+</ul>
+<h2>Usage</h2>
+<p>After compiling the programs into executables, run the executable and pass the path to the file to read as a command line argument.</p>
+<p>Ex: <code>./seqread /local/weka/random5G</code></p>
+<h2>Time Report</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>seqread</th>
+<th>randread</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1G</td>
+<td>0m12.020s<br>0m12.094s<br>0m12.053s</td>
+<td>21m37.146s<br>21m20.453s<br>20m57.543s</td>
+</tr>
+<tr>
+<td>2.5G</td>
+<td>0m29.246s<br>0m30.154s<br>0m29.687s</td>
+<td>53m48.240s<br>54m47.142s<br>54m01.875s</td>
+</tr>
+<tr>
+<td>5G</td>
+<td>0m58.392s<br>0m58.280s<br>0m58.535s</td>
+<td>91m50.303s<br>92m42.130s<br>92m23.121s</td>
+</tr>
+</tbody>
+</table>
+<h2>Analysis</h2>
+<p>Within the same method of reading (sequential and random), the time it takes to read the file is roughly proportional to the file's size. Also, reading randomly takes ~94-108 times longer than the sequential case. Clearly, it is a very bad idea to change the file cursor multiple times while reading. Note that the I ran <code>randread</code> on 5G file at about 10 pm separate from other experiments, so the performance seems to be a bit better than other cases.</p>
