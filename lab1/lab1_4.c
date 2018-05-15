@@ -7,6 +7,9 @@
 #include <sys/wait.h>
 #include <string.h>
 
+// Recursive function used to generate a symmetric process tree efficiently
+// Extended from function in lab1_3.c to accept arbitrary number of levels
+// and child per node as parameters
 void recurse(int maxLevel, int maxChild, int level, int child)
 {
 	int status;	// status from waitpid
@@ -37,7 +40,7 @@ int main(int arcc, char *argv[])
 	
 	printf("Root PID: %d\n", rootPid);
 	
-	// create 2 children manually
+	// create 2 children as left and right node from root manually
 	if (fork() != 0)
 	{
 		// root
@@ -52,7 +55,7 @@ int main(int arcc, char *argv[])
 			// second child - print out PID and parent PID
 			printf("second child PID: %6d ; parent PID: %6d\n", getpid(), getppid());
 			
-			// create process tree with 13 nodes
+			// create process tree with 13 nodes (3 levels 3 children)
 			recurse(2, 3, 0, 0);
 		}
 		
@@ -63,7 +66,7 @@ int main(int arcc, char *argv[])
 		// first child - print out PID and parent PID
 		printf("first  child PID: %6d ; parent PID: %6d\n", getpid(), getppid());
 
-		// create process tree with 4 nodes
+		// create process tree with 4 nodes (2 levels 3 children)
 		recurse(1, 3, 0, 0);
 	}
 }

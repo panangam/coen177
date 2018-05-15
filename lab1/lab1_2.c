@@ -22,7 +22,6 @@ int main(int arcc, char *argv[])
 			// parent
 			pid_t parentPid = getppid();
 			pid_t myPid = getpid();
-			//printf("Parent ; i: %d ; ppid: %6d ; pid: %6d\n", i, parentPid, myPid);
 			waitpid(-1, &status, 0);
 			return 0;
 		}

@@ -16,3 +16,6 @@ lab1_3: lab1_3.c
 
 lab1_4: lab1_4.c
 	gcc lab1_4.c -o lab1_4
+
+clean: 
+	rm $(EXECUTABLES)
