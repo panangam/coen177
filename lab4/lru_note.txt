@@ -1,0 +1,4 @@
+LRU
+
+- time that a page is referenced & flag if page is valid or not
+- when need to replace page: remove the time furthest in the past
