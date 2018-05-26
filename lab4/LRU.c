@@ -18,20 +18,22 @@ void LRUInit(int tableSize) {
 
 void LRURequest(int id) {
   timeTable[id] = time++;
+  printf("%d\n", time);
 }
 
 void LRUInsert(int id) {
   timeTable[id] = time++;
+  printf("%d\n", time);
 }
 
 int LRUReplace() {
   int toReplace;
   int minTime = INT_MAX;
-  int i;
-  for (i = 0; i < timeTableSize; i++) {
-    if (timeTable[i] < minTime) {
-      minTime = timeTable[i];
-      toReplace = i;
+  int j;
+  for (j = 0; j < timeTableSize; j++) {
+    if (timeTable[j] < minTime) {
+      minTime = timeTable[j];
+      toReplace = j;
     }
   }
   return toReplace;

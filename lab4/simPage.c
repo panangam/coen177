@@ -42,7 +42,9 @@ void parseArguments(int argc, char *argv[], int *outTableSize, REP_ALG_T *outRep
 
 int isInMemory(int pageRequest, int *pageTable, int tableSize) {
   int i;
+  printf("hey\n");
   for (i = 0; i < tableSize; i++) {
+    printf("i: %d ", i);
     if (pageRequest == pageTable[i]) {
       return i;
     }
@@ -57,11 +59,8 @@ int main(int argc, char *argv[]) {
   int numRequests = 0;
   int numMisses = 0;
   
-  printf("test1\n");
   int *pageTable = (int *) malloc(sizeof(int)*tableSize);
-  char *input = NULL;
-  size_t inputAllocated = 0;
-  ssize_t bytesRead;
+  char buffer[100];
 
   REP_ALG_T repAlg;
   void (*ReplacerRequest)(int);
@@ -97,18 +96,22 @@ int main(int argc, char *argv[]) {
     ReplacerFree = &SCFree;
   }
 
+  printf("initialized\n");
+
   // number of hits = numRequests-numMisses
   // hit rate = hits/requests
   
-  while ((bytesRead = getline(&input, &inputAllocated, stdin)) != -1) {
-    pageRequest = atoi(input);
+  while (fgets(buffer, sizeof(buffer), stdin)) {
+    pageRequest = atoi(buffer);
+    printf("%d\n", pageRequest);
     if (pageRequest == 0) { // parse request number and check for error
       continue;
     }
     numRequests++;
+    printf("testloop1 %d, %d\n", pageRequest, tableSize);
 
     searchRes = isInMemory(pageRequest, pageTable, tableSize);
-    
+    printf("testloop2\n");
     if (searchRes < 0) {
       printf("Page %d caused a page fault.\n", pageRequest);
       numMisses++;
@@ -130,7 +133,7 @@ int main(int argc, char *argv[]) {
   
   printf("Hit rate = %f\n", (numRequests-numMisses)/(double)numRequests);
   
-  free(input);
+  printf("freeing\n");
   free(pageTable);
   (*ReplacerFree)();
   return 0;

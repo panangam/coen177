@@ -16,7 +16,6 @@ void FIFOInit(int tableSize) {
 }
 
 void FIFORequest(int res) {
-  return;
 }
 
 void FIFOInsert(int id) {
