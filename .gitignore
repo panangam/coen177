@@ -12,7 +12,9 @@
 !Makefile
 
 # Archive files
-
 *.tar
 *.tar.gz
 *.zip
+
+# Build files
+*.o

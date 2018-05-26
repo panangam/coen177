@@ -2,3 +2,16 @@ LRU
 
 - time that a page is referenced & flag if page is valid or not
 - when need to replace page: remove the time furthest in the past
+
+FIFO
+
+- detect order of incoming request
+- remove the oldest one
+
+SecondChance
+
+- keep track of repeated requests
+- 
+
+Methods
+- 
