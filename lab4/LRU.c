@@ -18,12 +18,12 @@ void LRUInit(int tableSize) {
 
 void LRURequest(int id) {
   timeTable[id] = time++;
-  printf("%d\n", time);
+  //printf("%d\n", time);
 }
 
 void LRUInsert(int id) {
   timeTable[id] = time++;
-  printf("%d\n", time);
+  //printf("%d\n", time);
 }
 
 int LRUReplace() {
