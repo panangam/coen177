@@ -19,21 +19,20 @@ void age() {
 }
 
 void AGINGInit(int tableSize) {
-  ageTable = (unsigned char*) malloc(tableSize*sizeof(int));
+  ageTable = (unsigned char*) malloc(tableSize*sizeof(char));
   memset(ageTable, 0, tableSize*sizeof(char));
   timeTableSize = tableSize;
-  time = 0;
 }
 
 void AGINGRequest(int id) {
-  tick = (tick+1)%MAX_TICK
-  ageTable[id] |= 128; // OR with b1000000
+  tick = (tick+1)%MAX_TICK;
+  ageTable[id] |= (UCHAR_MAX-(UCHAR_MAX>>1)); // OR with b1000000
   if (tick == 0) age();
 }
 
 void AGINGInsert(int id) {
-  tick = (tick+1)%MAX_TICK
-  ageTable[id] |= 128; // OR with b1000000
+  tick = (tick+1)%MAX_TICK;
+  ageTable[id] |= (UCHAR_MAX-(UCHAR_MAX>>1)); // OR with b1000000
   if (tick == 0) age();
 }
 
@@ -47,6 +46,7 @@ int AGINGReplace() {
       toReplace = j;
     }
   }
+  ageTable[j] = (UCHAR_MAX-(UCHAR_MAX>>1));
   return toReplace;
 }
 

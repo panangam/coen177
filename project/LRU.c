@@ -40,5 +40,10 @@ int LRUReplace() {
 }
 
 void LRUFree() {
+  int i;
+  fprintf(stderr, "LRU time table:\n");
+  for (i = 0; i < timeTableSize; i++) {
+    fprintf(stderr, "%d, ", timeTable[i]);
+  }
   free(timeTable);
 }

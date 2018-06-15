@@ -5,16 +5,24 @@
 #include "FIFO.h"
 #include "SC.h"
 #include "LRU.h"
+#include "AGING.h"
+#include "AGING_8.h"
+#include "AGING_16.h"
+#include "AGING_32.h"
 
 // replacement algorithms enumeration
 typedef enum rep_alg {
   LRU,
   FIFO,
   SC,
+  AGING,
+  AGING_8,
+  AGING_16,
+  AGING_32,
   NONE
 } REP_ALG_T;
 
-void parseArguments(int argc, char *argv[], int *outTableSize, REP_ALG_T *outRepAlg) {
+void parseArguments(int argc, char *argv[], int *outTableSize, REP_ALG_T *outRepAlg, int* AgingMaxTick) {
   int tableSize;
   if (argc == 1) {
     fprintf(stderr, "Wrong arguments; Example: ./sim -fifo 7\n");
@@ -25,15 +33,25 @@ void parseArguments(int argc, char *argv[], int *outTableSize, REP_ALG_T *outRep
     *outRepAlg = NONE;
     return;
   }
-  else if (argc == 3 && (tableSize = atoi(argv[2]))) {
+  else if (argc == 3) {
     if (strcmp(argv[1], "-lru") == 0) *outRepAlg = LRU;
     else if (strcmp(argv[1], "-fifo") == 0) *outRepAlg = FIFO;
-    else if (strcmp(argv[1], "-secondchance") == 0) *outRepAlg = SC;
+    else if (strcmp(argv[1], "-sc") == 0) *outRepAlg = SC;
+    else if (strcmp(argv[1], "-aging") == 0) *outRepAlg = AGING;
     else {
-      fprintf(stderr, "Wrong arguments; Use -lru, -fifo, or -secondchance as first argument\n");
+      fprintf(stderr, "Wrong arguments; Use -lru, -fifo, -sc, or -aging as first argument\n");
       exit(-1);
     }
-    *outTableSize = tableSize;
+    *outTableSize = atoi(argv[2]);
+    return;
+  }
+  else if (argc == 4) {
+    fprintf(stderr, "4 args\n");
+    if (strcmp(argv[1], "-aging8") == 0) *outRepAlg = AGING_8;
+    else if (strcmp(argv[1], "-aging16") == 0) *outRepAlg = AGING_16;
+    else if (strcmp(argv[1], "-aging32") == 0) *outRepAlg = AGING_32;
+    *outTableSize = atoi(argv[2]);
+    *AgingMaxTick = atoi(argv[3]);
     return;
   }
   fprintf(stderr, "Wrong arguments; Pass tableSize as second argument\n");
@@ -42,9 +60,7 @@ void parseArguments(int argc, char *argv[], int *outTableSize, REP_ALG_T *outRep
 
 int isInMemory(int pageRequest, int *pageTable, int tableSize) {
   int i;
-  //printf("hey\n");
   for (i = 0; i < tableSize; i++) {
-    //printf("i: %d ", i);
     if (pageRequest == pageTable[i]) {
       return i;
     }
@@ -70,12 +86,13 @@ int main(int argc, char *argv[]) {
   int toReplace;
   int searchRes;
 
-  //printf("test2\n");
-  // parse command line arguments
-  parseArguments(argc, argv, &tableSize, &repAlg);
-  pageTable = (int *) malloc(sizeof(int)*tableSize);
+  int AgingMaxTick;
 
-  //printf("test3\n");
+  // parse command line arguments
+  parseArguments(argc, argv, &tableSize, &repAlg, &AgingMaxTick);
+  pageTable = (int *) malloc(sizeof(int)*tableSize);
+  fprintf(stderr, "table size: %d\n", tableSize);
+
   // set appropriate function pointers for each algorithms
   if (repAlg == FIFO) {
     FIFOInit(tableSize);
@@ -95,26 +112,46 @@ int main(int argc, char *argv[]) {
     ReplacerInsert = &SCInsert;
     ReplacerReplace = &SCReplace;
     ReplacerFree = &SCFree;
+  } else if (repAlg == AGING) {
+    AGINGInit(tableSize);
+    ReplacerRequest = &AGINGRequest;
+    ReplacerInsert = &AGINGInsert;
+    ReplacerReplace = &AGINGReplace;
+    ReplacerFree = &AGINGFree;
+  } else if (repAlg == AGING_8) {
+    AGING8Init(tableSize, AgingMaxTick);
+    ReplacerRequest = &AGING8Request;
+    ReplacerInsert = &AGING8Insert;
+    ReplacerReplace = &AGING8Replace;
+    ReplacerFree = &AGING8Free;
+  } else if (repAlg == AGING_16) {
+    AGING16Init(tableSize, AgingMaxTick);
+    ReplacerRequest = &AGING16Request;
+    ReplacerInsert = &AGING16Insert;
+    ReplacerReplace = &AGING16Replace;
+    ReplacerFree = &AGING16Free;
+  } else if (repAlg == AGING_32) {
+    AGING32Init(tableSize, AgingMaxTick);
+    ReplacerRequest = &AGING32Request;
+    ReplacerInsert = &AGING32Insert;
+    ReplacerReplace = &AGING32Replace;
+    ReplacerFree = &AGING32Free;
   }
 
-  //printf("initialized\n");
 
   // number of hits = numRequests-numMisses
   // hit rate = hits/requests
   
   while (fgets(buffer, sizeof(buffer), stdin)) {
     pageRequest = atoi(buffer);
-    //printf("%d\n", pageRequest);
     if (pageRequest == 0) { // parse request number and check for error
       continue;
     }
     numRequests++;
-    //printf("testloop1 %d, %d\n", pageRequest, tableSize);
 
     searchRes = isInMemory(pageRequest, pageTable, tableSize);
-    //printf("testloop2\n");
     if (searchRes < 0) {
-      //printf("Page %d caused a page fault.\n", pageRequest);
+      // printf("Page %d caused a page fault.\n", pageRequest);
       numMisses++;
       if (pageTableIndex < tableSize) {
         // stil have room in the page table
@@ -132,10 +169,11 @@ int main(int argc, char *argv[]) {
     }
   }
   
-  printf("%d, %f\n", tableSize, (numRequests-numMisses)/(double)numRequests);
+  printf("Hit rate = %f\n", (numRequests-numMisses)/(double)numRequests);
   
-  //fprintf(stderr, "freeing\n");
+  fprintf(stderr, "test\n");
   free(pageTable);
+  fprintf(stderr, "freed page table\n");
   (*ReplacerFree)();
   return 0;
 }

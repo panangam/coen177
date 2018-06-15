@@ -5,6 +5,7 @@
 #include "FIFO.h"
 #include "SC.h"
 #include "LRU.h"
+#include "AGING.h"
 
 // replacement algorithms enumeration
 typedef enum rep_alg {
@@ -94,8 +95,11 @@ int main(int argc, char *argv[]) {
     ReplacerReplace = &SCReplace;
     ReplacerFree = &SCFree;
   } else if (repAlg == AGING) {
-    fprintf(stderr, "DEBUG: chose AGING algorithm");
-    // TODO: link function pointers with aging algorithm functions
+    AGINGInit(tableSize);
+    ReplacerRequest = &AGINGRequest;
+    ReplacerInsert = &AGINGInsert;
+    ReplacerReplace = &AGINGReplace;
+    ReplacerFree = &AGINGFree;
   }
 
 
