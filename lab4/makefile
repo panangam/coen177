@@ -17,3 +17,4 @@ LRU.o: LRU.c LRU.h
 
 clean:
 	rm *.o
+	rm sim
